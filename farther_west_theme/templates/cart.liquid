@@ -1,0 +1,89 @@
+<div class="container" style="padding: 3rem 1rem;">
+  <h1 style="margin-bottom: 2rem;">Shopping Cart</h1>
+
+  {% if cart.item_count > 0 %}
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+      <!-- Cart Items -->
+      <div>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid #ddd;">
+              <th style="text-align: left; padding: 1rem;">Product</th>
+              <th style="text-align: center; padding: 1rem;">Price</th>
+              <th style="text-align: center; padding: 1rem;">Quantity</th>
+              <th style="text-align: right; padding: 1rem;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart.items %}
+              <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 1rem;">
+                  <div style="display: flex; gap: 1rem;">
+                    {% if item.image %}
+                      <img src="{{ item.image | img_url: '100x100' }}" alt="{{ item.title }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                    {% endif %}
+                    <div>
+                      <h3 style="margin-bottom: 0.5rem;">{{ item.title }}</h3>
+                      {% if item.variant.title != 'Default Title' %}
+                        <p style="font-size: 14px; color: #666;">{{ item.variant.title }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+                <td style="text-align: center; padding: 1rem;">${{ item.price | money_without_currency }}</td>
+                <td style="text-align: center; padding: 1rem;">
+                  <input type="number" value="{{ item.quantity }}" min="1" style="width: 60px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+                </td>
+                <td style="text-align: right; padding: 1rem;">${{ item.final_line_price | money_without_currency }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Cart Summary -->
+      <div style="background-color: #f9f9f9; padding: 2rem; border-radius: 10px; height: fit-content;">
+        <h2 style="margin-bottom: 1.5rem; font-size: 24px;">Order Summary</h2>
+        
+        <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 1rem;">
+          <span>Subtotal:</span>
+          <span>${{ cart.subtotal_price | money_without_currency }}</span>
+        </div>
+
+        <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 1rem;">
+          <span>Shipping:</span>
+          <span>Calculated at checkout</span>
+        </div>
+
+        <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; font-weight: 600; font-size: 18px;">
+          <span>Total:</span>
+          <span>${{ cart.total_price | money_without_currency }}</span>
+        </div>
+
+        <form method="post" action="/checkout" style="margin-bottom: 1rem;">
+          <button type="submit" class="add-to-cart-btn" style="width: 100%; padding: 1rem; font-size: 16px; background-color: #B9431F;">
+            PROCEED TO CHECKOUT
+          </button>
+        </form>
+
+        <a href="/collections/all" class="add-to-cart-btn" style="display: block; text-align: center; background-color: #333; padding: 1rem;">
+          CONTINUE SHOPPING
+        </a>
+
+        <!-- Promo Code -->
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #ddd;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Promo Code:</label>
+          <input type="text" placeholder="Enter code" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0.5rem;">
+          <button style="width: 100%; padding: 0.75rem; background-color: #333; color: white; border: none; border-radius: 4px; cursor: pointer;">Apply</button>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 3rem;">
+      <p style="font-size: 18px; color: #666; margin-bottom: 1.5rem;">Your cart is empty</p>
+      <a href="/collections/all" class="add-to-cart-btn" style="display: inline-block; padding: 1rem 2rem;">
+        START SHOPPING
+      </a>
+    </div>
+  {% endif %}
+</div>

@@ -1,0 +1,186 @@
+<!-- Hero Slideshow Section -->
+<section class="hero-section">
+  <div class="slideshow-container">
+    <!-- Slide 1 -->
+    <div class="slide active">
+      <img src="{{ 'VspxR8gqoryP08m9Mej0u1wU6b4.png' | asset_url }}" alt="Hero Image 1">
+    </div>
+    
+    <!-- Slide 2 -->
+    <div class="slide">
+      <img src="{{ 'VnMKctekFI2bSPzPeIvVtWVA.png' | asset_url }}" alt="Hero Image 2">
+    </div>
+    
+    <!-- Slide 3 -->
+    <div class="slide">
+      <img src="{{ 'VspxR8gqoryP08m9Mej0u1wU6b4.png' | asset_url }}" alt="Hero Image 3">
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <button class="slide-nav prev" onclick="changeSlide(-1)">
+      <img src="{{ '6tTbkXggWgQCAJ4DO2QEdXXmgM.svg' | asset_url }}" alt="Previous">
+    </button>
+    <button class="slide-nav next" onclick="changeSlide(1)">
+      <img src="{{ '11KSGbIZoRSg4pjdnUoif6MKHI.svg' | asset_url }}" alt="Next">
+    </button>
+    
+    <!-- Slide Indicators -->
+    <div class="slide-controls">
+      <span class="slide-dot active" onclick="currentSlide(1)"></span>
+      <span class="slide-dot" onclick="currentSlide(2)"></span>
+      <span class="slide-dot" onclick="currentSlide(3)"></span>
+    </div>
+  </div>
+</section>
+
+<!-- New Collection Section -->
+<section class="section">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+      <div>
+        <h3 style="color: #B9431F; font-size: 13px; margin-bottom: 1rem;">NEW COLLECTION</h3>
+        <h2 style="font-size: 41px; color: #333; margin-bottom: 1.5rem;">RAISE HELL</h2>
+        <button class="banner-btn" style="background-color: #B9431F; color: white; border: none;">SEE ALL PRODUCTS</button>
+      </div>
+      <div>
+        <img src="{{ 'PGdthBVcV63qeldyzYjR26DdE.jpeg' | asset_url }}" alt="New Collection" style="width: 100%; border-radius: 10px;">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products Grid -->
+<section class="section">
+  <div class="container">
+    <h2 style="text-align: center; margin-bottom: 2rem;">Featured Products</h2>
+    
+    <div class="product-grid">
+      {% for product in collection.products limit: 6 %}
+        <div class="product-card">
+          <div class="product-image">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | img_url: '400x400' }}" alt="{{ product.title }}">
+            {% endif %}
+          </div>
+          <div class="product-info">
+            <div class="product-category">{{ product.type }}</div>
+            <h3 class="product-name">{{ product.title }}</h3>
+            <div class="product-price">
+              <span class="price">${{ product.price | money_without_currency }}</span>
+              {% if product.compare_at_price %}
+                <span class="compare-price">${{ product.compare_at_price | money_without_currency }}</span>
+              {% endif %}
+            </div>
+            <form method="post" action="/cart/add" style="display: flex; gap: 0.5rem;">
+              <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+              <input type="number" name="quantity" value="1" min="1" style="width: 60px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+              <button type="submit" class="add-to-cart-btn" style="flex: 1;">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Best Sellers Section -->
+<section class="section" style="background-color: #F9D5B6;">
+  <div class="container">
+    <h2 style="text-align: center; margin-bottom: 2rem;">MOST BELOVED</h2>
+    <h3 style="text-align: center; font-size: 31px; margin-bottom: 2rem; color: #D9D9D9;">BEST SELLERS</h3>
+    
+    <div class="carousel-container">
+      <div class="carousel" id="bestsellersCarousel">
+        {% for product in collection.products limit: 8 %}
+          <div class="carousel-item">
+            <div class="product-card">
+              <div class="product-image">
+                {% if product.featured_image %}
+                  <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}">
+                {% endif %}
+              </div>
+              <div class="product-info">
+                <div class="product-category">{{ product.type }}</div>
+                <h3 class="product-name">{{ product.title }}</h3>
+                <div class="product-price">
+                  <span class="price">${{ product.price | money_without_currency }}</span>
+                </div>
+                <button class="add-to-cart-btn" onclick="addToCart('{{ product.variants.first.id }}')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <button class="carousel-nav prev" onclick="scrollCarousel('bestsellersCarousel', -1)">
+        <img src="{{ '6tTbkXggWgQCAJ4DO2QEdXXmgM.svg' | asset_url }}" alt="Previous">
+      </button>
+      <button class="carousel-nav next" onclick="scrollCarousel('bestsellersCarousel', 1)">
+        <img src="{{ '11KSGbIZoRSg4pjdnUoif6MKHI.svg' | asset_url }}" alt="Next">
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  let currentSlideIndex = 1;
+
+  function changeSlide(n) {
+    showSlide(currentSlideIndex += n);
+  }
+
+  function currentSlide(n) {
+    showSlide(currentSlideIndex = n);
+  }
+
+  function showSlide(n) {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.slide-dot');
+    
+    if (n > slides.length) {
+      currentSlideIndex = 1;
+    }
+    if (n < 1) {
+      currentSlideIndex = slides.length;
+    }
+    
+    slides.forEach(slide => slide.classList.remove('active'));
+    dots.forEach(dot => dot.classList.remove('active'));
+    
+    slides[currentSlideIndex - 1].classList.add('active');
+    dots[currentSlideIndex - 1].classList.add('active');
+  }
+
+  function scrollCarousel(carouselId, direction) {
+    const carousel = document.getElementById(carouselId);
+    const scrollAmount = 320; // width of item + gap
+    carousel.scrollBy({
+      left: direction * scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+
+  function addToCart(variantId) {
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: variantId,
+        quantity: 1
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert('Product added to cart!');
+      window.location.href = '/cart';
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  // Auto-advance slides every 5 seconds
+  setInterval(() => {
+    changeSlide(1);
+  }, 5000);
+</script>
